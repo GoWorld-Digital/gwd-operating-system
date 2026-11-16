@@ -1,0 +1,99 @@
+# /opt/gwd/Caddyfile
+# Caddy 2 — GoWorld.Digital (GWD) Operating System reverse proxy
+# Automatic HTTPS via Let's Encrypt (no ALB needed)
+
+{
+  email ops@goworld.digital
+  admin off
+  auto_https on
+}
+
+# ── GWD Operations & Control Plane (GWD-Command / Ops) ───────────────────────
+ops.goworld.digital {
+  reverse_proxy orchestrator:3000 {
+    health_uri      /health
+    health_interval 10s
+    health_timeout  5s
+  }
+
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options    "nosniff"
+    X-Frame-Options           "DENY"
+    Referrer-Policy           "strict-origin-when-cross-origin"
+    -Server
+  }
+
+  log {
+    output file /data/logs/ops-access.log {
+      roll_size     50mb
+      roll_keep     5
+      roll_keep_for 720h
+    }
+    format json
+  }
+}
+
+# ── GWD Core Orchestrator API ─────────────────────────────────────────────────
+api.goworld.digital {
+  reverse_proxy orchestrator:3000 {
+    health_uri      /health
+    health_interval 10s
+    health_timeout  5s
+  }
+
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options    "nosniff"
+    X-Frame-Options           "DENY"
+    Referrer-Policy           "strict-origin-when-cross-origin"
+    -Server
+  }
+
+  log {
+    output file /data/logs/api-access.log {
+      roll_size     50mb
+      roll_keep     5
+      roll_keep_for 720h
+    }
+    format json
+  }
+}
+
+# ── GWD Revenue & CRM Gateway (Webhooks + Chat Channels) ─────────────────────
+crm.goworld.digital {
+  reverse_proxy gwdbot:4000 {
+    health_uri      /health
+    health_interval 10s
+  }
+
+  handle /webhook/telegram* {
+    reverse_proxy gwdbot:4000
+  }
+
+  handle /webhook/whatsapp* {
+    reverse_proxy gwdbot:4000
+  }
+
+  handle /webhook/crm* {
+    reverse_proxy gwdbot:4000
+  }
+
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options    "nosniff"
+    -Server
+  }
+
+  log {
+    output file /data/logs/crm-access.log {
+      roll_size     50mb
+      roll_keep     5
+      roll_keep_for 720h
+    }
+    format json
+  }
+}
+
+# ── NOTE: Telemetry server (port 18790) is NOT proxied through Caddy ──────────
+# GWD Desktop connects directly via WSS to :18790 using token-based auth.

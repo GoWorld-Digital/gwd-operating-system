@@ -1,0 +1,184 @@
+# /opt/gwd/docker-compose.yml
+# GoWorld.Digital (ATLASHUB DIGITAL LTD — UK #17379237)
+# GWD Operating System — Phase 1 Production Stack
+# Run with: docker compose up -d
+# Logs:      docker compose logs -f --tail=100
+
+name: gwd
+
+# ── Shared network ────────────────────────────────────────────────────────────
+networks:
+  gwd-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
+
+# ── Named volumes ─────────────────────────────────────────────────────────────
+volumes:
+  pgdata:
+    driver: local
+  caddy-data:
+    driver: local
+  caddy-config:
+    driver: local
+
+services:
+
+  # ── 1. PostgreSQL 16 + pgvector ─────────────────────────────────────────────
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: gwd-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gwddb
+      POSTGRES_USER: gwdadmin
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    networks:
+      gwd-net:
+        ipv4_address: 172.22.0.10
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gwdadmin -d gwddb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    expose:
+      - "5432"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── 2. GWD Core Orchestrator / Agent Runtime ───────────────────────────────
+  orchestrator:
+    image: ghcr.io/goworld-digital/gwd-orchestrator:${GWD_VERSION:-latest}
+    container_name: gwd-orchestrator
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      AWS_REGION: us-east-2
+      GWD_TENANT_ID: gwd
+      DATABASE_URL: postgresql://gwdadmin:${POSTGRES_PASSWORD}@postgres:5432/gwddb
+      TELEMETRY_PORT: "18790"
+      GWD_LOG_LEVEL: info
+      BEDROCK_BUILDER_MODEL: anthropic.claude-3-5-sonnet-20240620-v1:0
+      BEDROCK_AUDITOR_MODEL: anthropic.claude-3-haiku-20240307-v1:0
+      BEDROCK_INDEXER_MODEL: meta.llama3-8b-instruct-v1:0
+      BEDROCK_EMBEDDING_MODEL: amazon.titan-embed-text-v2:0
+    networks:
+      - gwd-net
+    expose:
+      - "3000"
+      - "18790"
+    volumes:
+      - /opt/gwd/vault:/app/vault:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  # ── 3. GWD Bot & CRM Webhook Gateway ────────────────────────────────────────
+  gwdbot:
+    image: ghcr.io/goworld-digital/gwd-bot-gateway:${GWD_VERSION:-latest}
+    container_name: gwd-bot-gateway
+    restart: unless-stopped
+    depends_on:
+      orchestrator:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      AWS_REGION: us-east-2
+      GWD_TENANT_ID: gwd
+      ORCHESTRATOR_URL: http://orchestrator:3000
+      GATEWAY_PORT: "4000"
+      SECRETS_PATH: gwd/gwdbot
+    networks:
+      - gwd-net
+    expose:
+      - "4000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  # ── 4. GWD Telemetry Server ─────────────────────────────────────────────────
+  telemetry:
+    image: ghcr.io/goworld-digital/gwd-telemetry:${GWD_VERSION:-latest}
+    container_name: gwd-telemetry
+    restart: unless-stopped
+    depends_on:
+      - orchestrator
+    environment:
+      NODE_ENV: production
+      AWS_REGION: us-east-2
+      GWD_TENANT_ID: gwd
+      TELEMETRY_WS_PORT: "18790"
+      ORCHESTRATOR_URL: http://orchestrator:3000
+      ALLOWED_ORIGINS: "tauri://localhost,https://tauri.localhost"
+    networks:
+      - gwd-net
+    ports:
+      - "18790:18790"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:18790/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── 5. Caddy Reverse Proxy ───────────────────────────────────────────────────
+  caddy:
+    image: caddy:2-alpine
+    container_name: gwd-caddy
+    restart: unless-stopped
+    depends_on:
+      - orchestrator
+      - gwdbot
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - gwd-net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ── Docker secrets (populated by deploy.sh from AWS Secrets Manager) ──────────
+secrets:
+  db_password:
+    file: /run/gwd-secrets/db_password.txt

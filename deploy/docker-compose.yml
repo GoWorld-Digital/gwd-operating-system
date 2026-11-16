@@ -71,8 +71,8 @@ services:
       DATABASE_URL: postgresql://gwdadmin:${POSTGRES_PASSWORD}@postgres:5432/gwddb
       TELEMETRY_PORT: "18790"
       GWD_LOG_LEVEL: info
-      BEDROCK_BUILDER_MODEL: anthropic.claude-3-5-sonnet-20240620-v1:0
-      BEDROCK_AUDITOR_MODEL: anthropic.claude-3-haiku-20240307-v1:0
+      BEDROCK_BUILDER_MODEL: anthropic.claude-sonnet-4-6
+      BEDROCK_AUDITOR_MODEL: anthropic.claude-haiku-4-5-20251001-v1:0
       BEDROCK_INDEXER_MODEL: meta.llama3-8b-instruct-v1:0
       BEDROCK_EMBEDDING_MODEL: amazon.titan-embed-text-v2:0
     networks:

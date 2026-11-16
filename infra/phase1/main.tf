@@ -261,7 +261,7 @@ output "gwd_host_public_ip" {
 
 output "github_actions_role_arn" {
   description = "ARN to set as AWS_GITHUB_ACTIONS_ROLE_ARN in GitHub Secrets"
-  value       = aws_iam_role.github_actions.arn
+  value       = var.enable_github_oidc ? aws_iam_role.github_actions[0].arn : null
 }
 
 output "vault_sync_bucket_name" {

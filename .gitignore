@@ -1,0 +1,13 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+tfplan
+backend_override.tf
+
+# Secrets / Keys
+*.pem
+*.key
+.env
+.env.*

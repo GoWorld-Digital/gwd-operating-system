@@ -46,12 +46,19 @@ variable "public_subnet_cidr" {
 variable "ec2_instance_type" {
   description = "EC2 instance type for the GWD Core Docker host"
   type        = string
-  default     = "t3.medium"
+  default     = "m7i-flex.large"
 }
 
 variable "ec2_key_pair_name" {
   description = "Name of the EC2 SSH Key Pair"
   type        = string
+  default     = "gwd-core-key"
+}
+
+variable "enable_github_oidc" {
+  description = "Create GitHub Actions OIDC provider and role (set false when blocked by org SCP)"
+  type        = bool
+  default     = false
 }
 
 variable "allowed_ssh_cidr" {

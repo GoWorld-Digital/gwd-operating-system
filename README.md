@@ -14,8 +14,7 @@
 
 ## Overview
 
-**GoWorld.Digital (GWD)** is an AI-Native venture foundry and Service-as-a-Software platform operated by **ATLASHUB DIGITAL LTD**.  
-This repository (`GoWorld-Digital/gwd-operating-system`) is the canonical source of truth for GWD's **cloud infrastructure (IaC)**, **production container stack**, and **organizational architecture**.
+**GoWorld.Digital (GWD)** is currently presented as **GWD Genesis — AI Venture Studio**, organized around Governance, Ventures and Cortex. This repository preserves a prior infrastructure/operating-model proposal. It is not the current constitution, not the portfolio authority and not evidence that its described cloud resources or production services are deployed. The prior GWD-GOV-0001 Charter names ATLASHUB DIGITAL LTD; the current legal operator and any investment/contracting vehicle remain subject to explicit transition and qualified legal review.
 
 ---
 

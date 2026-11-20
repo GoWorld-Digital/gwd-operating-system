@@ -1,5 +1,11 @@
 # GoWorld.Digital — AI-Native Operating System
 
+> **GWD RECONCILIATION NOTICE — 20 NOV 2026**  
+> **LEGACY / NON-GOVERNING OPERATING-ARCHITECTURE PROPOSAL.** This repository contains an earlier six-department, AWS/Atlas-Harness and operational architecture description. It is not the current constitution, portfolio authority or verified inventory of deployed resources. Preserve it for technical due diligence. Any claimed cloud resource, domain, service, database, task system or integration must be independently verified before use, migration or retirement. Current institutional policy is in [gwd-venture-studio](https://github.com/GoWorld-Digital/gwd-venture-studio); operational implementation belongs in [gwd-core](https://github.com/GoWorld-Digital/gwd-core), subject to approved mandates.
+
+---
+
+
 > **Operated by:** `ATLASHUB DIGITAL LTD` (UK Companies House `#17379237`)  
 > **Model:** Autonomous Venture Foundry & Service-as-a-Software Platform  
 > **Cloud Account:** AWS `854784157482` (`us-east-2`) | **Tenant:** `gwd`

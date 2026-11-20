@@ -6,9 +6,9 @@
 ---
 
 
-> **Operated by:** `ATLASHUB DIGITAL LTD` (UK Companies House `#17379237`)  
-> **Model:** Autonomous Venture Foundry & Service-as-a-Software Platform  
-> **Cloud Account:** AWS `854784157482` (`us-east-2`) | **Tenant:** `gwd`
+> **Historical model:** Autonomous Venture Foundry & Service-as-a-Software Platform  
+> **Tenant label in prior design:** `gwd`  
+> **Legal operator / investment vehicle:** not established by this repository; see the Decision Continuity Register.
 
 ---
 
@@ -19,7 +19,7 @@ This repository (`GoWorld-Digital/gwd-operating-system`) is the canonical source
 
 ---
 
-## The 6 Agentic Departments
+## Historical six-department proposal (not the current organization)
 
 | # | Department | Core Mandate | Key Surfaces |
 |---|---|---|---|
@@ -32,7 +32,7 @@ This repository (`GoWorld-Digital/gwd-operating-system`) is the canonical source
 
 ---
 
-## The 3 Operational Circuits
+## Historical proposed operational circuits (not verified live workflows)
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────┐
@@ -58,7 +58,7 @@ This repository (`GoWorld-Digital/gwd-operating-system`) is the canonical source
 ```text
 gwd-operating-system/
 ├── .github/workflows/
-│   └── terraform-plan.yml      # OIDC-authenticated Terraform Plan (PR) & Apply (main)
+│   └── terraform-plan.yml      # Historical workflow; see open security PR #1 before any use
 ├── infra/
 │   └── phase1/
 │       ├── main.tf             # VPC, EC2 (gwd-core), EIP, S3 (gwd-vault-sync-prod, gwd-media-assets-prod)
@@ -74,9 +74,9 @@ gwd-operating-system/
 
 ---
 
-## Security & Governance Principles
+## Prior proposed security controls — not verified implementation evidence
 
-- **Zero Long-Lived Keys in CI:** GitHub Actions authenticates to AWS via OIDC locked exclusively to `repo:GoWorld-Digital/gwd-operating-system:*`.
-- **IMDSv2 Enforced:** EC2 metadata requires session tokens; runtime secrets are pulled from AWS Secrets Manager into `tmpfs` (`/run/gwd-secrets`).
-- **Dual-Tier Memory Separation:** `executive` and `operational` memory tiers are explicitly enforced in `gbrain` and `soul`.
-- **Human-in-the-Loop Gates:** Production Terraform applies and external commercial/financial actions require explicit human approval.
+- The earlier design proposed GitHub Actions OIDC for AWS access; verify trust policy and permissions before use.
+- The earlier design described IMDSv2 and AWS Secrets Manager; verify the actual resources and runtime configuration.
+- The earlier design described `executive` and `operational` memory tiers; this does not ratify Atlas-Cortex internals or prove isolation.
+- The earlier design described human approval gates. The open [PR #1](https://github.com/GoWorld-Digital/gwd-operating-system/pull/1) proposes removing automatic Terraform apply from main; review and merge decisions remain pending.

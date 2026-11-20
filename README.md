@@ -1,7 +1,7 @@
 # GoWorld.Digital — AI-Native Operating System
 
 > **GWD RECONCILIATION NOTICE — 20 NOV 2026**  
-> **LEGACY / NON-GOVERNING OPERATING-ARCHITECTURE PROPOSAL.** This repository contains an earlier six-department, AWS/Atlas-Harness and operational architecture description. It is not the current constitution, portfolio authority or verified inventory of deployed resources. Preserve it for technical due diligence. Any claimed cloud resource, domain, service, database, task system or integration must be independently verified before use, migration or retirement. Current institutional policy is in [gwd-venture-studio](https://github.com/GoWorld-Digital/gwd-venture-studio); operational implementation belongs in [gwd-core](https://github.com/GoWorld-Digital/gwd-core), subject to approved mandates.
+> **LEGACY / NON-GOVERNING OPERATING-ARCHITECTURE PROPOSAL.** This repository contains an earlier six-department, AWS/Atlas-Harness and operational architecture description. It is not the current constitution, portfolio authority or verified inventory of deployed resources. Preserve it for technical due diligence. A separate branch, security/day0-disable-auto-terraform-apply-20261120, indicates a Terraform safety change proposal and must be preserved and reviewed. Any claimed cloud resource, domain, service, database, task system or integration must be independently verified before use, migration or retirement. Current institutional policy is in [gwd-venture-studio](https://github.com/GoWorld-Digital/gwd-venture-studio); operational implementation belongs in [gwd-core](https://github.com/GoWorld-Digital/gwd-core), subject to approved mandates.
 
 ---
 
